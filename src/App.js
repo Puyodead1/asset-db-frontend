@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import LoginScreen from "./LoginScreen";
+import MainScreen from "./MainScreen";
+import LoadingScreen from "./LoadingScreen";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+  const [user, setUser] = React.useState(null);
+  const [isLoading, setLoading] = React.useState(true);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
+  useEffect(() => {
+    const lsUser = localStorage.getItem("user");
+    if (lsUser) {
+      setUser(JSON.parse(lsUser));
+      console.debug("Loaded user from local storage", lsUser);
+    }
+
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+      console.debug("Updated localstore user");
+    }
+  }, [user]);
+
+  if (isLoading)
+    return (
+      <LoadingScreen
+        size={150}
+        color="#fff"
+        isLoading={isLoading}
+        className="main-loader"
+      />
+    );
+
+  if (!user) return <LoginScreen setUser={setUser} />;
+
+  return <MainScreen user={user} logout={logout} />;
 }
-
-export default App;
