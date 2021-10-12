@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import { createTheme } from "@material-ui/core/styles";
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "react-image-gallery/styles/css/image-gallery.css";
 import "./index.css";
+import { grey } from "@mui/material/colors";
 
 const darkTheme = createTheme({
   palette: {
@@ -13,6 +13,10 @@ const darkTheme = createTheme({
       default: "#202225",
       secondary: "#2f3136",
       paper: "#36393f",
+    },
+    text: {
+      primary: "#fff",
+      secondary: grey[500],
     },
   },
 });

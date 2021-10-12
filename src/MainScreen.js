@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from "react";
-import ImportDialog from "./ImportDialog";
 
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Typography from "@material-ui/core/Typography";
-import Chip from "@material-ui/core/Chip";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Divider from "@material-ui/core/Divider";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Dialog from "@mui/material/Dialog";
 
 import ClipLoader from "react-spinners/ClipLoader";
 import ImageGallery from "react-image-gallery";
 
 import UE4Logo from "./UE4Logo";
+import ImportAssetForm from "./components/ImportAssetForm";
 
 export default function MainScreen({ user, logout }) {
+  const [style, setStyle] = useState({});
   const [assets, setAssets] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [isImportDialogOpen, setImportDialogOpen] = useState(false);
@@ -131,7 +133,7 @@ export default function MainScreen({ user, logout }) {
         </Grid>
 
         <Grid item className="sidebar-griditem">
-          <Button variant="outlined" color="secondary" onClick={logout}>
+          <Button variant="contained" color="error" onClick={logout}>
             Logout
           </Button>
         </Grid>
@@ -144,10 +146,15 @@ export default function MainScreen({ user, logout }) {
         )}
       </List>
 
-      <ImportDialog
-        isOpen={isImportDialogOpen}
-        handleClose={handleCloseImportDialog}
-      />
+      <Dialog
+        open={isImportDialogOpen}
+        onClose={handleCloseImportDialog}
+        fullWidth
+        maxWidth={700}
+        style={style}
+      >
+        <ImportAssetForm setStyle={setStyle} close={handleCloseImportDialog} />
+      </Dialog>
     </Box>
   );
 }

@@ -1,4 +1,4 @@
-import { Container } from "@material-ui/core";
+import { Container } from "@mui/material";
 import ClipLoader from "react-spinners/ClipLoader";
 
 export default function LoadingScreen({ color, size, isLoading, className }) {

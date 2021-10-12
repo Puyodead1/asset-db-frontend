@@ -1,4 +1,4 @@
-import Icon from "@material-ui/core/Icon";
+import Icon from "@mui/material/Icon";
 import Logo from "./UE_Logo_icon-only_white.svg";
 
 export default function UE4Logo() {

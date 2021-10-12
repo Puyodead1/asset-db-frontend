@@ -1,7 +1,7 @@
-import Container from "@material-ui/core/Container";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import FormControl from "@material-ui/core/FormControl";
+import Container from "@mui/material/Container";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
 import { useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 
