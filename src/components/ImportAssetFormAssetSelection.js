@@ -15,7 +15,8 @@ import Typography from "@mui/material/Typography";
 
 export default class ImportAssetFormAssetSelection extends Component {
   render() {
-    const { values, searchResults, handleChange, selectAsset } = this.props;
+    const { values, searchResults, handleChange, selectAsset, search } =
+      this.props;
     return (
       <React.Fragment>
         <DialogTitle>Import Asset from Unreal Engine Marketplace</DialogTitle>
@@ -37,7 +38,7 @@ export default class ImportAssetFormAssetSelection extends Component {
           <Grid container direction="row" pt={2}>
             {searchResults.map((asset) => {
               return (
-                <Grid item xs={3} p={1} key={asset.urlSlug}>
+                <Grid item xs={3} p={1} key={searchResults.indexOf(asset)}>
                   <Card
                     raised
                     sx={{
@@ -88,7 +89,11 @@ export default class ImportAssetFormAssetSelection extends Component {
                             {asset.categories.map((category) => {
                               return (
                                 <Grid item>
-                                  <Chip label={category.name} color="info" />
+                                  <Chip
+                                    label={category.name}
+                                    color="info"
+                                    key={category.path}
+                                  />
                                 </Grid>
                               );
                             })}
@@ -134,6 +139,14 @@ export default class ImportAssetFormAssetSelection extends Component {
           </Grid>
         </DialogContent>
         <DialogActions style={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            onClick={search}
+            color="primary"
+            variant="contained"
+            size="large"
+          >
+            Search
+          </Button>
           <Button onClick={this.props.close} color="error" variant="outlined">
             Cancel
           </Button>

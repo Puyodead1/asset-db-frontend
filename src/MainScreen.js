@@ -19,11 +19,78 @@ import ImageGallery from "react-image-gallery";
 import UE4Logo from "./UE4Logo";
 import ImportAssetForm from "./components/ImportAssetForm";
 
+const processItem = (item) => {
+  const images = item.images.map((x) => {
+    return {
+      original: x.url,
+      thumbnail: x.url,
+      originalHeight: x.height === 1080 ? 720 : x.height,
+      originalWidth: x.height === 1920 ? 1080 : x.width,
+      thumbnailLabel: x.type,
+      originalAlt: x.type,
+      originalTitle: x.type,
+    };
+  });
+  return (
+    <ListItem alignItems="flex-start" key={item.title}>
+      <Card className="asset-card">
+        <CardContent>
+          <ListItemText
+            primary={item.title}
+            secondary={
+              <React.Fragment>
+                <Typography
+                  component="span"
+                  variant="caption"
+                  className="asset-description"
+                >
+                  {item.description}
+                </Typography>
+              </React.Fragment>
+            }
+          />
+
+          <ImageGallery
+            items={images}
+            showFullscreenButton={false}
+            showPlayButton={false}
+            lazyLoad={true}
+          />
+
+          <Grid
+            container
+            direction="row"
+            alignContent="center"
+            justifyContent="center"
+          >
+            <Grid item xs={1}>
+              <Chip label={item.type} />
+            </Grid>
+
+            {item.tags.map((tag) => {
+              return (
+                <Grid item>
+                  <Chip label={tag.name} color="info" key={tag.path} />
+                </Grid>
+              );
+            })}
+
+            <Grid item xs={1}>
+              <Chip label={item.category} color="primary" />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    </ListItem>
+  );
+};
+
 export default function MainScreen({ user, logout }) {
   const [style, setStyle] = useState({});
   const [assets, setAssets] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [isImportDialogOpen, setImportDialogOpen] = useState(false);
+  const [allowDisplayAssets, setAllowDisplayAssets] = useState(false);
 
   const handleOpenImportDialog = () => {
     setImportDialogOpen(true);
@@ -32,6 +99,12 @@ export default function MainScreen({ user, logout }) {
   const handleCloseImportDialog = () => {
     setImportDialogOpen(false);
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setAllowDisplayAssets(true);
+    }, 2 * 1000);
+  }, []);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/v1/assets", {
@@ -48,68 +121,40 @@ export default function MainScreen({ user, logout }) {
         const items = [];
 
         // process the json into an array of jsx
-        json.forEach((item) => {
-          const images = item.images.map((x) => {
-            return {
-              original: x.url,
-              thumbnail: x.url,
-              originalHeight: x.height === 1080 ? 720 : x.height,
-              originalWidth: x.height === 1920 ? 1080 : x.width,
-              thumbnailLabel: x.type,
-              originalAlt: x.type,
-              originalTitle: x.type,
-            };
+        json
+          .sort((a, b) => b.addedAt - a.addedAt)
+          .forEach((item) => {
+            items.push(processItem(item));
           });
-          items.push(
-            <ListItem alignItems="flex-start" key={item.title}>
-              <Card className="asset-card">
-                <CardContent>
-                  <ListItemText
-                    primary={item.title}
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="caption"
-                          className="asset-description"
-                        >
-                          {item.description}
-                        </Typography>
-                      </React.Fragment>
-                    }
-                  />
-
-                  <ImageGallery
-                    items={images}
-                    showFullscreenButton={false}
-                    showPlayButton={false}
-                    lazyLoad={true}
-                  />
-
-                  <Grid
-                    container
-                    direction="row"
-                    alignContent="center"
-                    justifyContent="center"
-                  >
-                    <Grid item xs={1}>
-                      <Chip label={item.type} />
-                    </Grid>
-
-                    <Grid item xs={1}>
-                      <Chip label={item.category} color="primary" />
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </ListItem>
-          );
-        });
         setAssets(items);
         setLoading(false);
       })
       .catch(console.error);
   }, [user]);
+
+  const addItem = (item) => {
+    setAssets([processItem(item), ...assets]);
+  };
+
+  var data = (
+    <div className="text-center">
+      <ClipLoader
+        color="primary"
+        loading={isLoading || !allowDisplayAssets}
+        size={150}
+        css={{ textAlign: "center" }}
+      />
+      <p>Loading...</p>
+    </div>
+  );
+
+  if (!isLoading && allowDisplayAssets) {
+    data = assets.length ? (
+      assets
+    ) : (
+      <h1 className="text-center">No assets found</h1>
+    );
+  }
 
   return (
     <Box className="main-wrapper">
@@ -138,22 +183,21 @@ export default function MainScreen({ user, logout }) {
           </Button>
         </Grid>
       </Grid>
-      <List className="content">
-        {isLoading ? (
-          <ClipLoader color="primary" loading={isLoading} size={150} />
-        ) : (
-          assets
-        )}
-      </List>
+      <List className="content">{data}</List>
 
       <Dialog
         open={isImportDialogOpen}
         onClose={handleCloseImportDialog}
         fullWidth
-        maxWidth={700}
+        maxWidth="xl"
         style={style}
       >
-        <ImportAssetForm setStyle={setStyle} close={handleCloseImportDialog} />
+        <ImportAssetForm
+          setStyle={setStyle}
+          close={handleCloseImportDialog}
+          user={user}
+          addItem={addItem}
+        />
       </Dialog>
     </Box>
   );

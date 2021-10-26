@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import ImportAssetFormAssetSelection from "./ImportAssetFormAssetSelection";
+import ImportAssetFormError from "./ImportAssetFormError";
 import ImportAssetFormImport from "./ImportAssetFormImport";
+import ImportAssetFormSelectType from "./ImportAssetFormSelectType";
 import ImportAssetFormSuccess from "./ImportAssetFormSuccess";
 
 export class ImportAssetForm extends Component {
@@ -11,6 +13,8 @@ export class ImportAssetForm extends Component {
       searchQuery: "",
       asset: null,
       searchResults: [],
+      type: "",
+      error: null,
     };
   }
 
@@ -28,7 +32,12 @@ export class ImportAssetForm extends Component {
 
   // handle field change
   handleChange = (input) => (e) => {
+    console.log(input, e.target.value);
     this.setState({ [input]: e.target.value });
+  };
+
+  importError = (error) => {
+    this.setState({ error });
   };
 
   searchForAsset = (query) => {
@@ -46,10 +55,11 @@ export class ImportAssetForm extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
+    console.log(this.state);
     if (prevState.searchQuery !== this.state.searchQuery) {
       if (!this.state.searchQuery || !this.state.searchQuery.length)
         this.setState({ searchResults: [] });
-      else this.searchForAsset(this.state.searchQuery);
+      // else this.searchForAsset(this.state.searchQuery);
     }
 
     if (prevState.asset !== this.state.asset) {
@@ -57,9 +67,23 @@ export class ImportAssetForm extends Component {
     }
   }
 
+  search = () => {
+    this.searchForAsset(this.state.searchQuery);
+  };
+
   render() {
-    const { step, searchQuery, asset, searchResults } = this.state;
-    const values = { searchQuery, asset };
+    const { step, searchQuery, asset, searchResults, type, error } = this.state;
+    const values = { searchQuery, asset, type, error };
+
+    if (error)
+      return (
+        <ImportAssetFormError
+          values={values}
+          setStyle={this.props.setStyle}
+          close={this.props.close}
+        />
+      );
+
     switch (step) {
       case 1:
       default:
@@ -69,21 +93,35 @@ export class ImportAssetForm extends Component {
             handleChange={this.handleChange}
             values={values}
             searchResults={searchResults}
+            search={this.search}
             selectAsset={this.selectAsset}
             close={this.props.close}
           />
         );
       case 2:
         return (
-          <ImportAssetFormImport
+          <ImportAssetFormSelectType
             nextStep={this.nextStep}
+            handleChange={this.handleChange}
             values={values}
             setStyle={this.props.setStyle}
             close={this.props.close}
           />
         );
-
       case 3:
+        return (
+          <ImportAssetFormImport
+            nextStep={this.nextStep}
+            values={values}
+            setStyle={this.props.setStyle}
+            close={this.props.close}
+            importError={this.importError}
+            addAsset={this.props.addItem}
+            user={this.props.user}
+          />
+        );
+
+      case 4:
         return (
           <ImportAssetFormSuccess
             nextStep={this.nextStep}

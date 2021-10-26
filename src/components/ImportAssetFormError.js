@@ -4,27 +4,31 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import { Typography } from "@mui/material";
 
-export default class ImportAssetFormSuccess extends Component {
+export default class ImportAssetFormError extends Component {
   componentDidMount() {
     this.props.setStyle({ textAlign: "center" });
   }
 
   render() {
     const { values } = this.props;
-    const { asset } = values;
+    const { asset, error } = values;
 
     return (
       <React.Fragment>
-        <DialogTitle>Success</DialogTitle>
+        <DialogTitle>Error</DialogTitle>
         <DialogContent>
           <DialogContentText className="importasset-form-loader-wrapper">
-            Successfully imported <b>{asset.title}</b>!
+            An error occurred while attempting to import <b>{asset.title}</b>!
           </DialogContentText>
+          <Typography variant="body1">
+            {error.toString() || "Unknown"}
+          </Typography>
         </DialogContent>
 
         <DialogActions style={{ display: "flex", justifyContent: "center" }}>
-          <Button onClick={this.props.close} color="primary" variant="outlined">
+          <Button onClick={this.props.close} color="error" variant="outlined">
             Close
           </Button>
         </DialogActions>

@@ -15,8 +15,7 @@
 
 .content {
   /* background-color: #36393f; */
-  flex: 9;
-  max-height: 100%;
+  flex: 8;
   overflow: auto;
 }
 
